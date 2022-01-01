@@ -1,9 +1,10 @@
-FROM debian:jessie
+FROM debian:stable
 
-MAINTAINER kfei <kfei@kfei.net>
+ARG rt_user
+ARG rt_pass
 
-ENV VER_LIBTORRENT 0.13.4
-ENV VER_RTORRENT 0.9.4
+ENV VER_LIBTORRENT 0.13.8
+ENV VER_RTORRENT 0.9.8
 
 WORKDIR /usr/local/src
 
@@ -29,7 +30,7 @@ RUN build_deps="automake build-essential ca-certificates libc-ares-dev libcppuni
     cd .. && \
     rm -rf xmlrpc-c && \
     ldconfig && \
-    wget -O libtorrent-$VER_LIBTORRENT.tar.gz https://github.com/rakshasa/libtorrent/archive/$VER_LIBTORRENT.tar.gz && \
+    wget -O libtorrent-$VER_LIBTORRENT.tar.gz https://github.com/rakshasa/rtorrent-archive/raw/master/libtorrent-$VER_LIBTORRENT.tar.gz && \
     tar xzf libtorrent-$VER_LIBTORRENT.tar.gz && \
     cd libtorrent-$VER_LIBTORRENT && \
     ./autogen.sh && \
@@ -39,7 +40,7 @@ RUN build_deps="automake build-essential ca-certificates libc-ares-dev libcppuni
     cd .. && \
     rm -rf libtorrent-* && \
     ldconfig && \
-    wget -O rtorrent-$VER_RTORRENT.tar.gz https://github.com/rakshasa/rtorrent/archive/$VER_RTORRENT.tar.gz && \
+    wget -O rtorrent-$VER_RTORRENT.tar.gz https://github.com/rakshasa/rtorrent-archive/raw/master/rtorrent-$VER_RTORRENT.tar.gz && \
     tar xzf rtorrent-$VER_RTORRENT.tar.gz && \
     cd rtorrent-$VER_RTORRENT && \
     ./autogen.sh && \
@@ -81,7 +82,7 @@ RUN echo "deb http://www.deb-multimedia.org jessie main" >> /etc/apt/sources.lis
     ffmpeg
 
 # IMPORTANT: Change the default login/password of ruTorrent before build
-RUN htpasswd -cb /usr/share/nginx/html/rutorrent/.htpasswd docktorrent p@ssw0rd
+RUN htpasswd -cb /usr/share/nginx/html/rutorrent/.htpasswd $rt_user $rt_pass
 
 # Copy config files
 COPY config/nginx/default /etc/nginx/sites-available/default
